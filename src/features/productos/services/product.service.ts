@@ -14,10 +14,10 @@ function buildQueryString(filters: ProductFilters = {}): string {
     params.set('search', filters.search.trim());
   }
   if (filters.minPrecio !== undefined && !Number.isNaN(filters.minPrecio)) {
-    params.set('minPrecio', String(filters.minPrecio));
+    params.set('minPrice', String(filters.minPrecio));
   }
   if (filters.maxPrecio !== undefined && !Number.isNaN(filters.maxPrecio)) {
-    params.set('maxPrecio', String(filters.maxPrecio));
+    params.set('maxPrice', String(filters.maxPrecio));
   }
 
   const qs = params.toString();
@@ -27,33 +27,36 @@ function buildQueryString(filters: ProductFilters = {}): string {
 export const productService = {
   getAll(filters: ProductFilters = {}): Promise<ResponseList<Product>> {
     const query = buildQueryString(filters);
-    return apiRequest<ResponseList<Product>>(`/products${query}`, {
+    return apiRequest<ResponseList<Product>>(`/productos${query}`, {
       method: 'GET',
     });
   },
 
-  getById(id: number): Promise<Product> {
-    return apiRequest<Product>(`/products/${id}`, {
+  async getById(id: number): Promise<Product> {
+    const res = await apiRequest<{ data: Product }>(`/productos/${id}`, {
       method: 'GET',
     });
+    return res.data;
   },
 
-  create(payload: ProductInput): Promise<Product> {
-    return apiRequest<Product>('/products', {
+  async create(payload: ProductInput): Promise<Product> {
+    const res = await apiRequest<{ data: Product }>('/productos', {
       method: 'POST',
-      body: JSON.stringify(payload),
+      body: payload,
     });
+    return res.data;
   },
 
-  update(id: number, payload: Partial<ProductInput>): Promise<Product> {
-    return apiRequest<Product>(`/products/${id}`, {
+  async update(id: number, payload: Partial<ProductInput>): Promise<Product> {
+    const res = await apiRequest<{ data: Product }>(`/productos/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(payload),
+      body: payload,
     });
+    return res.data;
   },
 
   remove(id: number): Promise<void> {
-    return apiRequest<void>(`/products/${id}`, {
+    return apiRequest<void>(`/productos/${id}`, {
       method: 'DELETE',
     });
   },

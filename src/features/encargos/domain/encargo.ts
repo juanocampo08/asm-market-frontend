@@ -1,6 +1,4 @@
-import type { Product } from '@/features/productos/domain/product';
-
-export type EncargoEstado = 'pendiente' | 'entregado' | 'cancelado';
+export type EncargoEstado = 'PENDIENTE' | 'EN_PROCESO' | 'ENTREGADO';
 
 export interface EncargoUsuario {
   id: number;
@@ -8,22 +6,28 @@ export interface EncargoUsuario {
   email: string;
 }
 
+export interface EncargoProducto {
+  id: number;
+  nombre: string;
+  categoria: string;
+  precio: number;
+  imagen: string;
+}
+
 export interface Encargo {
   id: number;
-  usuario_id: number;
-  producto_id: number;
+  userId: number;
+  productoId: number;
   cantidad: number;
-  presupuesto: number | null;
-  detalles: string;
+  mensaje: string;
   estado: EncargoEstado | string;
-  created_at: string;
-  producto?: Product;
-  usuario?: EncargoUsuario;
+  createdAt: string;
+  producto?: EncargoProducto;
+  user?: EncargoUsuario;
 }
 
 export interface CreateEncargoInput {
-  producto_id: number;
+  productoId: number;
   cantidad: number;
-  presupuesto?: number;
-  detalles: string;
+  mensaje: string;
 }

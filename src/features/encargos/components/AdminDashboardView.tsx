@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import type { EncargoEstado } from '../domain/encargo';
 import {
   Plus,
   Pencil,
@@ -49,6 +50,7 @@ export function AdminDashboardView() {
     pagination: encargosPagination,
     isLoading: isLoadingEncargos,
     error: encargosError,
+    updateEncargoEstado,
   } = useEncargos('all', encargosPage, 8);
 
   // Estado para el modal Crear / Editar Producto
@@ -58,7 +60,7 @@ export function AdminDashboardView() {
   const [descripcion, setDescripcion] = useState('');
   const [precio, setPrecio] = useState('');
   const [categoria, setCategoria] = useState<string>('Beauty');
-  const [imagen, setImagen] = useState('/assets/images/Cerave.jpg');
+  const [imagen, setImagen] = useState('/assets/images/Tonico-Serum.JPEG');
   const [localErrors, setLocalErrors] = useState<Record<string, string>>({});
 
   // Estado para el diálogo de confirmación de eliminación (+1 pto bonificación)
@@ -82,7 +84,7 @@ export function AdminDashboardView() {
     setDescripcion('');
     setPrecio('');
     setCategoria('Beauty');
-    setImagen('/assets/images/Cerave.jpg');
+    setImagen('/assets/images/Tonico-Serum.JPEG');
     setLocalErrors({});
     clearProductErrors();
     setIsModalOpen(true);
@@ -94,7 +96,7 @@ export function AdminDashboardView() {
     setDescripcion(product.descripcion);
     setPrecio(String(product.precio));
     setCategoria(product.categoria);
-    setImagen(product.imagen || '/assets/images/Cerave.jpg');
+    setImagen(product.imagen || '/assets/images/Tonico-Serum.JPEG');
     setLocalErrors({});
     clearProductErrors();
     setIsModalOpen(true);
@@ -404,8 +406,8 @@ export function AdminDashboardView() {
                     <tbody className="divide-y divide-slate-100 text-xs">
                       {encargos.map((enc) => {
                         const clientName =
-                          enc.usuario?.nombre || `Usuario #${enc.usuario_id}`;
-                        const clientEmail = enc.usuario?.email || '';
+                          enc.user?.nombre || `Usuario #${enc.userId}`;
+                        const clientEmail = enc.user?.email || '';
                         const initials = clientName
                           .split(' ')
                           .map((n) => n[0])
@@ -437,25 +439,43 @@ export function AdminDashboardView() {
                             </td>
                             <td className="py-4 px-4 font-medium text-[#233140]">
                               {enc.producto?.nombre ||
-                                `Producto #${enc.producto_id}`}
+                                `Producto #${enc.productoId}`}
                             </td>
                             <td className="py-4 px-4 font-semibold text-[#233140]">
                               {enc.cantidad}
                             </td>
                             <td className="py-4 px-4 text-slate-500 max-w-xs">
-                              <p className="line-clamp-2">{enc.detalles}</p>
+                              <p className="line-clamp-2">{enc.mensaje}</p>
                             </td>
                             <td className="py-4 px-4 text-slate-400">
-                              {enc.created_at
-                                ? new Date(enc.created_at).toLocaleDateString(
+                              {enc.createdAt
+                                ? new Date(enc.createdAt).toLocaleDateString(
                                     'es-CO'
                                   )
                                 : 'Reciente'}
                             </td>
                             <td className="py-4 pl-4 text-right">
-                              <span className="inline-block bg-amber-50 border border-amber-200 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-amber-800">
-                                {enc.estado}
-                              </span>
+                                <select
+                                value={enc.estado}
+                                onChange={(e) =>
+                                void updateEncargoEstado(
+                                    enc.id,
+                                    e.target.value as EncargoEstado
+                                )
+                                }
+                                aria-label={`Estado del encargo #${enc.id}`}
+                                className={`border px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-widest outline-none cursor-pointer transition-colors ${
+                                enc.estado === 'ENTREGADO'
+                                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                                    : enc.estado === 'EN_PROCESO'
+                                    ? 'bg-sky-50 border-sky-200 text-sky-800'
+                                    : 'bg-amber-50 border-amber-200 text-amber-800'
+                                }`}
+                                >
+                                <option value="PENDIENTE">PENDIENTE</option>
+                                <option value="EN_PROCESO">EN PROCESO</option>
+                                <option value="ENTREGADO">ENTREGADO</option>
+                                </select>
                             </td>
                           </tr>
                         );
@@ -521,7 +541,7 @@ export function AdminDashboardView() {
                   type="text"
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
-                  placeholder="Ej. CeraVe Moisturizing Cream"
+                  placeholder="Ej. Tonico "
                   className="w-full border border-slate-200 px-3.5 py-2.5 text-sm text-[#233140] outline-none focus:border-[#233140]"
                 />
                 {nombreErr && (
@@ -579,7 +599,7 @@ export function AdminDashboardView() {
                   type="text"
                   value={imagen}
                   onChange={(e) => setImagen(e.target.value)}
-                  placeholder="/assets/images/Cerave.jpg"
+                  placeholder="/assets/images/Tonico-Serum.JPEG"
                   className="w-full border border-slate-200 px-3.5 py-2.5 text-sm text-[#233140] outline-none focus:border-[#233140]"
                 />
                 {imagenErr && (

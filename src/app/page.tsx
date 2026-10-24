@@ -97,7 +97,7 @@ export default function HomePage() {
                   <div className="aspect-4/3 overflow-hidden border border-slate-200 bg-[#F8F9FA] shadow-lg">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src="/assets/images/Guess.jpg"
+                      src="/assets/images/Tonico-Serum.JPEG"
                       alt="Colección importada ASM Market"
                       className="h-full w-full object-cover"
                     />

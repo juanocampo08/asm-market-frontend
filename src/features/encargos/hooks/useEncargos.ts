@@ -6,7 +6,7 @@ import {
   DEFAULT_PAGINATION,
   type Pagination,
 } from '@/features/common/ResponseList';
-import type { CreateEncargoInput, Encargo } from '../domain/encargo';
+import type { CreateEncargoInput, Encargo, EncargoEstado } from '../domain/encargo';
 import { encargoService } from '../services/encargo.service';
 
 export type EncargosFetchMode = 'none' | 'mios' | 'all';
@@ -36,13 +36,13 @@ export function useEncargos(
           : await encargoService.getAll(page, limit);
 
       setEncargos(response.data);
-      const rawMeta = response.pagination ?? response.meta ?? DEFAULT_PAGINATION;
+            const rawMeta = response.pagination ?? response.meta;
       setPagination({
-        total: rawMeta.total ?? response.data.length,
-        limit: rawMeta.limit ?? limit,
-        page: rawMeta.page ?? rawMeta.currentPage ?? page,
-        currentPage: rawMeta.currentPage ?? rawMeta.page ?? page,
-        totalPages: rawMeta.totalPages ?? 1,
+        total: rawMeta?.total ?? response.data.length,
+        limit: rawMeta?.limit ?? limit,
+        page: rawMeta?.page ?? rawMeta?.currentPage ?? page,
+        currentPage: rawMeta?.currentPage ?? rawMeta?.page ?? page,
+        totalPages: rawMeta?.totalPages ?? 1,
       });
     } catch (err: unknown) {
       if (err instanceof ApiError) {
@@ -88,6 +88,29 @@ export function useEncargos(
     }
   };
 
+    const updateEncargoEstado = async (
+    id: number,
+    estado: EncargoEstado
+  ): Promise<boolean> => {
+    setError(null);
+    try {
+      const updated = await encargoService.updateEstado(id, estado);
+      setEncargos((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, estado: updated.estado } : item))
+      );
+      return true;
+    } catch (err: unknown) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError('Error al actualizar el estado del encargo.');
+      }
+      return false;
+    }
+  };
+
+
+
   const clearErrors = useCallback(() => {
     setError(null);
     setFieldErrors({});
@@ -103,5 +126,6 @@ export function useEncargos(
     reload: fetchEncargos,
     createEncargo,
     clearErrors,
+    updateEncargoEstado,
   };
 }

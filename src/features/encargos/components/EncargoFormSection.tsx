@@ -70,7 +70,7 @@ export function EncargoFormSection({
     const numCantidad = Number(cantidad);
 
     if (!productoId || Number.isNaN(numProductoId) || numProductoId <= 0) {
-      errs.producto_id = 'Selecciona un producto del catálogo.';
+      errs.productoId = 'Selecciona un producto del catálogo.';
     }
     if (!cantidad || Number.isNaN(numCantidad) || numCantidad < 1) {
       errs.cantidad = 'La cantidad mínima es 1 unidad.';
@@ -78,9 +78,9 @@ export function EncargoFormSection({
       errs.cantidad = 'La cantidad máxima por encargo es 50 unidades.';
     }
     if (!detalles.trim()) {
-      errs.detalles = 'Cuéntanos los detalles de tu solicitud.';
+      errs.mensaje = 'Cuéntanos los detalles de tu solicitud.';
     } else if (detalles.trim().length < 10) {
-      errs.detalles = 'Describe tu encargo con al menos 10 caracteres.';
+      errs.mensaje = 'Describe tu encargo con al menos 10 caracteres.';
     }
 
     setLocalErrors(errs);
@@ -99,18 +99,10 @@ export function EncargoFormSection({
 
     if (!validate()) return;
 
-    const chosenProduct = catalogOptions.find(
-      (p) => p.id === Number(productoId)
-    );
-    const estimatedBudget = chosenProduct
-      ? Number(chosenProduct.precio) * Number(cantidad)
-      : undefined;
-
     const ok = await createEncargo({
-      producto_id: Number(productoId),
+      productoId: Number(productoId),
       cantidad: Number(cantidad),
-      presupuesto: estimatedBudget,
-      detalles: detalles.trim(),
+      mensaje: detalles.trim(),
     });
 
     if (ok) {
@@ -120,10 +112,10 @@ export function EncargoFormSection({
     }
   };
 
-  const productoError = localErrors.producto_id || apiFieldErrors.producto_id;
+  const productoError = localErrors.productoId || apiFieldErrors.productoId;
   const cantidadError = localErrors.cantidad || apiFieldErrors.cantidad;
-  const detallesError = localErrors.detalles || apiFieldErrors.detalles;
-
+  const detallesError = localErrors.mensaje || apiFieldErrors.mensaje;
+  
   return (
     <section id="encargos" className="bg-[#233140] py-24 text-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

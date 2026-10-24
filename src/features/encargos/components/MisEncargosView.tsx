@@ -130,10 +130,8 @@ export function MisEncargosView() {
                 {encargos.map((encargo) => {
                   const prod = encargo.producto;
                   const unitPrice = prod ? Number(prod.precio) : 0;
-                  const isDelivered =
-                    encargo.estado.toLowerCase() === 'entregado';
-                  const formattedDate = encargo.created_at
-                    ? new Date(encargo.created_at).toLocaleDateString('es-CO', {
+                  const formattedDate = encargo.createdAt
+                    ? new Date(encargo.createdAt).toLocaleDateString('es-CO', {
                         day: '2-digit',
                         month: 'short',
                         year: 'numeric',
@@ -169,23 +167,31 @@ export function MisEncargosView() {
 
                             <span
                               className={`inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${
-                                isDelivered
+                                encargo.estado === 'ENTREGADO'
                                   ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                  : encargo.estado === 'EN_PROCESO'
+                                  ? 'bg-sky-50 text-sky-700 border border-sky-200'
                                   : 'bg-amber-50 text-amber-800 border border-amber-200'
                               }`}
                             >
                               <span
                                 className={`h-1.5 w-1.5 rounded-full ${
-                                  isDelivered ? 'bg-emerald-600' : 'bg-amber-500'
+                                  encargo.estado === 'ENTREGADO'
+                                    ? 'bg-emerald-600'
+                                    : encargo.estado === 'EN_PROCESO'
+                                    ? 'bg-sky-500'
+                                    : 'bg-amber-500'
                                 }`}
                               />
-                              {encargo.estado}
+                              {encargo.estado === 'EN_PROCESO'
+                                ? 'EN PROCESO'
+                                : encargo.estado}
                             </span>
                           </div>
 
                           {/* Nombre del producto */}
                           <h2 className="font-serif text-2xl text-[#233140]">
-                            {prod?.nombre || `Producto #${encargo.producto_id}`}
+                            {prod?.nombre || `Producto #${encargo.productoId}`}
                           </h2>
 
                           {/* Metadatos en 3 columnas */}
@@ -230,7 +236,7 @@ export function MisEncargosView() {
                             Mensaje para el vendedor
                           </span>
                           <p className="text-xs leading-relaxed text-slate-600">
-                            {encargo.detalles}
+                            {encargo.mensaje}
                           </p>
                         </div>
                       </div>

@@ -1,13 +1,14 @@
 import { apiRequest } from '@/features/common/http';
 import type { ResponseList } from '@/features/common/ResponseList';
-import type { CreateEncargoInput, Encargo } from '../domain/encargo';
+import type { CreateEncargoInput, Encargo, EncargoEstado } from '../domain/encargo';
 
 export const encargoService = {
-  create(payload: CreateEncargoInput): Promise<Encargo> {
-    return apiRequest<Encargo>('/encargos', {
+  async create(payload: CreateEncargoInput): Promise<Encargo> {
+    const res = await apiRequest<{ data: Encargo }>('/encargos', {
       method: 'POST',
-      body: JSON.stringify(payload),
+      body: payload,
     });
+    return res.data;
   },
 
   getMine(page = 1, limit = 10): Promise<ResponseList<Encargo>> {
@@ -26,5 +27,13 @@ export const encargoService = {
         method: 'GET',
       }
     );
+  },
+
+  async updateEstado(id: number, estado: EncargoEstado): Promise<Encargo> {
+    const res = await apiRequest<{ data: Encargo }>(`/encargos/${id}/estado`, {
+      method: 'PATCH',
+      body: { estado },
+    });
+    return res.data;
   },
 };
