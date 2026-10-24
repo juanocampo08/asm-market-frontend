@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   title: 'ASM Market | Belleza, Vitaminas y Moda USA en Colombia',
   description:
     'Selección curada de productos originales de Estados Unidos en belleza, vitaminas y moda, directo a Colombia.',
+  icons: {
+    icon: '/assets/images/Logo.jpg',
+  },
 };
 
 export default function RootLayout({
